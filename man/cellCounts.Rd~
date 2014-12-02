@@ -1,0 +1,31 @@
+\name{cellCounts}
+\alias{cellCounts}
+\docType{data}
+\title{
+%%   ~~ data name/kind ... ~~
+}
+\description{
+%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+}
+\usage{data("cellCounts")}
+\format{
+  The format is:
+ num [1:24, 1:5] 76.4 38 70.7 62.1 90.5 65.8 39.2 58.5 60.5 89.4 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:24] "B022_Stable" "B145_ACR" "B196_ACR" "B212_ACR" ...
+  ..$ : chr [1:5] "Neutrophils" "Lymphocytes" "Monocytes" "Eosinophils" ...
+}
+\details{
+%%  ~~ If necessary, more details than the __description__ above ~~
+}
+\source{
+%%  ~~ reference to a publication or URL from which the data were obtained ~~
+}
+\references{
+%%  ~~ possibly secondary sources and usages ~~
+}
+\examples{
+data(cellCounts)
+## maybe str(cellCounts) ; plot(cellCounts) ...
+}
+\keyword{datasets}

@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+<<>>=
+library(CellCODE)
+library(RColorBrewer)
+@
+\section{Vaccine Dataset}
+
+Load the data and experimantal factors from vaccine dataset (GSE29619) and pure cell datasets (DMAP and IRIS).
+The GSE29619 has been normalized and filtered for low expression.
+<<echo=TRUE>>=
+data("GSE29619")
+data("GSE29619facts")
+data("PureData")
+@
+Make a cell type tag matrix using the IRIS dataset. This is PBMC data so we are only using IRIS.
+<<echo=TRUE>>=
+irisTag=tagData(IRIS[,c("Neutrophil-Resting","CD4Tcell-N0", 
+                        "Monocyte-Day0", "Bcell-naïve",
+                        "NKcell-control", "PlasmaCell-FromPBMC", "DendriticCell-LPSstimulated")],2, max=20, 
+                ref=GSE29619, ref.mean=F);
+colnames(irisTag)=c("Neutrophil","Tcell", "Monocyte", 
+                    "Bcell", "NKcell", "PlasmaCell", "DendriticCell" )
+
+@
+
+Estimate proportions using the tag genes
+\setkeys{Gin}{width=1.0\textwidth}
+<<echo=TRUE,fig=TRUE,width=10,height=10>>=
+SPVs=getAllSPVs(GSE29619, paste(GSE29619.facts[,"vaccine"], GSE29619.facts[,"time"]), irisTag, "mixed", T) 
+@
+
+
+Plot proportion variables against Flow Cytometry counter measurements
+
+<<echo=TRUE,fig=TRUE,width=5,height=5>>=
+#load the FCM data
+data("fcm")
+ii7v=which(GSE29619.facts[,3]=="D7")
+plot(fcm[ii7v,3], SPVs[ii7v,6], log="x", ylab="Plasma Cell SPV", xlab="Plasmablast fraction (in percent)", pch=19)
+
+@
+
+\section{Proportion changes}
+Get relative changes by normalizing for subject identity
+<<echo=TRUE>>=
+
+SPVsR=t(resid(t(SPVs), model.matrix(~0+as.factor(GSE29619.facts[,2]))))
+@
+<<echo=TRUE,fig=TRUE,width=10,height=10>>=
+par(mfrow=c(2,3), mai=c(1,0.4,0.4,0.1), omi=rep(0,4))
+
+for ( i in c(2:7)){
+  boxplot(SPVsR[,i]~as.factor(paste(GSE29619.facts[,4],GSE29619.facts[,3])), outline=F, density=c(10,20,300),  las=2, yaxt="n", col=c(brewer.pal(3,"Blues"), brewer.pal(3, "Oranges")), density=c(10,20,300), at=c(1,2,3,5,6,7))
+  title(colnames(irisTag)[i])
+}
+
+@
+
+
+
+
+\end{document}

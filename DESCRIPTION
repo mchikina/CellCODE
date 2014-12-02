@@ -1,0 +1,10 @@
+Package: CellCODE
+Type: Package
+Title: Cell type COmputational Differential Estimation.
+Version: 0.99.0
+Date: 2014-08-14
+Author: Maria Chikina
+Maintainer: <mchikina@gmail.com>
+Description:  A set of tools for analyzing differntial expression in mixture datasets.
+License: GPL
+Imports: gplots, sva

@@ -1,0 +1,7 @@
+ls
+cd ../../
+rename 's/RData/rda/' *
+ls
+cd ../../
+rename 's/RData/rda/' *
+cd ../../

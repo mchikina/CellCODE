@@ -1,0 +1,70 @@
+\name{cellPopT}
+\alias{cellPopT}
+
+\title{
+Assign cell population using correlation
+}
+
+\usage{
+cellPopT(data, grp, SPVs, intCheckPval = 0.1, useAll = F)
+}
+
+
+\arguments{
+  \item{data}{
+Gene expression data
+}
+  \item{grp}{
+Clinical group factors.
+}
+  \item{SPVs}{
+A matrix of cell proportion variables with a row for each sample of data and a column for each cell type.
+}
+
+
+
+  \item{intCheckPval}{
+P-value for interaction terms that do not match the direction of the group effect. If the interaction is bellow this p-value the gene cell population combination will receive a score of 0.
+Can be set to 1 do not do any interaction checking.
+}
+  \item{useAll}{
+Fit a interaction model using all other SPVs as covariates. Not recommended for smaller sample sizes.
+}
+}
+
+\value{
+A gene by cell-type matrix of scores. Scores are interaction T statistics in absolute value (with some possibly zeroed out).
+}
+\examples{
+see vignette
+
+## The function is currently defined as
+function (data, grp, SPVs, intCheckPval = 0.1, useAll = F) 
+{
+    out = matrix(nrow = nrow(data), ncol = ncol(SPVs))
+    colnames(out) = colnames(SPVs)
+    rownames(out) = rownames(data)
+    for (i in 1:ncol(SPVs)) {
+        if (!useAll) {
+            modC = model.matrix(~1 + grp * SPVs[, i])
+        }
+        else {
+            modC = model.matrix(~1 + grp * SPVs[, i] + SPVs[, 
+                -i])
+        }
+        dimmod = ncol(modC)
+        resl = lm.coef(data, modC)
+        out[, i] = resl$tstat[, dimmod]
+        if (intCheckPval < 1) {
+            iibad = (sign(resl$tstat[, 2]) != sign(resl$tstat[, 
+                dimmod]) & resl$pval[, dimmod] < intCheckPval)
+            out[iibad, i] = 0
+        }
+    }
+    attr(out, "intCheckPval") = intCheckPval
+    attr(out, "useAll") = useAll
+    colnames(out) = colnames(SPVs)
+    abs(out)
+  }
+}
+

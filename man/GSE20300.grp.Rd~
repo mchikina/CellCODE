@@ -1,0 +1,28 @@
+\name{GSE20300.grp}
+\alias{GSE20300.grp}
+\docType{data}
+\title{
+%%   ~~ data name/kind ... ~~
+}
+\description{
+%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+}
+\usage{data("GSE20300.grp")}
+\format{
+  The format is:
+ Factor w/ 2 levels "ACR","Stable": 2 1 1 1 1 1 1 2 2 1 ...
+}
+\details{
+%%  ~~ If necessary, more details than the __description__ above ~~
+}
+\source{
+%%  ~~ reference to a publication or URL from which the data were obtained ~~
+}
+\references{
+%%  ~~ possibly secondary sources and usages ~~
+}
+\examples{
+data(GSE20300.grp)
+## maybe str(GSE20300.grp) ; plot(GSE20300.grp) ...
+}
+\keyword{datasets}

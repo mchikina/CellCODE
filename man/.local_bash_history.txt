@@ -1,0 +1,54 @@
+ls
+cat cellCounts.Rd GSE20300.grp.Rd GSE20300.Rd >ShenOrrData.Rd
+emacs ShenOrrData.Rd 
+cd ../../
+grep title ShenOrrData.Rd
+grep name ShenOrrData.Rd
+mv GSE20300.* ../../Backup/
+mv cellCounts.Rd ../../Backup/
+cd ../../
+ls
+less cellPopC.Rd
+emacs cellPopF.Rd 
+ls
+emacs combineTags.Rd 
+emacs cordist.Rd 
+ls
+emacs f.pvalue.Rd
+emacs IRIS.Rd 
+emacs DMAP.Rd
+emacs Garvan.Rd
+ls
+ks
+emacs svdIntGrp.Rd 
+emacs svds.Rd 
+emacs tagData.Rd 
+emacs varExplained.Rd 
+ls *Ex*
+emacs fstats.Rd
+cd ../
+grep simple *
+emacs CellCODE-package.Rd 
+less ../../Backup/CellCODE-package.Rd 
+cp ../../Backup/CellCODE-package.Rd  .
+emacs CellCODE-package.Rd 
+ls
+emacs ../NAMESPACE 
+ls
+emacs ../NAMESPACE 
+emacs ../DESCRIPTION 
+emacs ../NAMESPACE 
+emacs numAtFDR.Rd
+emacs svdIntGrp.Rd
+emacs numAtFDR.Rd
+emacs isRowmax.Rd
+emacs lm.coef.Rd
+emacs svdIntGrp.Rd
+emacs lm.coef.Rd
+emacs svdIntGrp.Rd
+grep see *Rd
+emacs cellPopT.Rd
+grep See *Rd
+emacs cellPopC.Rd
+emacs cellPopF.Rd
+emacs combineTags.Rd

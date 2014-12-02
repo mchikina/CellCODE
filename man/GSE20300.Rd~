@@ -1,0 +1,31 @@
+\name{GSE20300}
+\alias{GSE20300}
+\docType{data}
+\title{
+%%   ~~ data name/kind ... ~~
+}
+\description{
+%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+}
+\usage{data("GSE20300")}
+\format{
+  The format is:
+ num [1:12593, 1:24] 5.29 3.72 11.27 3.94 3.53 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:12593] "RFC2" "PAX8" "CCL5" "ESRRAP1" ...
+  ..$ : chr [1:24] "B022_Stable" "B145_ACR" "B196_ACR" "B212_ACR" ...
+}
+\details{
+%%  ~~ If necessary, more details than the __description__ above ~~
+}
+\source{
+%%  ~~ reference to a publication or URL from which the data were obtained ~~
+}
+\references{
+%%  ~~ possibly secondary sources and usages ~~
+}
+\examples{
+data(GSE20300)
+## maybe str(GSE20300) ; plot(GSE20300) ...
+}
+\keyword{datasets}

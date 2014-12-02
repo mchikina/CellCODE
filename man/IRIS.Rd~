@@ -1,0 +1,31 @@
+\name{IRIS}
+\alias{IRIS}
+\docType{data}
+\title{
+%%   ~~ data name/kind ... ~~
+}
+\description{
+%%  ~~ A concise (1-5 lines) description of the dataset. ~~
+}
+\usage{data("IRIS")}
+\format{
+  The format is:
+ num [1:14145, 1:22] 6.71 6.78 2.22 4.39 11.95 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:14145] "RFC2" "PAX8" "GAS6" "MMP14" ...
+  ..$ : chr [1:22] "Bcell-Memory_IgG_IgA" "Bcell-Memory_IgM" "Bcell-na\303\257ve" "CD4Tcell-N0" ...
+}
+\details{
+%%  ~~ If necessary, more details than the __description__ above ~~
+}
+\source{
+%%  ~~ reference to a publication or URL from which the data were obtained ~~
+}
+\references{
+%%  ~~ possibly secondary sources and usages ~~
+}
+\examples{
+data(IRIS)
+## maybe str(IRIS) ; plot(IRIS) ...
+}
+\keyword{datasets}

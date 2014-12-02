@@ -1,0 +1,29 @@
+\name{svdIntGrp}
+\alias{svdIntGrp}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+SVD with group interaction
+}
+\description{
+Finds the main axis of variation from a small submatrix of expression data while accounting for experimental group and group-eigenvector interactions effects.
+
+}
+\usage{
+svdIntGrp(dat, grp, cutoff = 0.3)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{dat}{
+Expression matrix data with genes in rows and samples in columns
+}
+  \item{grp}{
+A factor variable of experimental groups 
+}
+  \item{cutoff}{
+The fraction of genes to discard based on group effect
+}
+}
+
+\value{
+A single eigenvector of the reduced expression matrix
+}
