@@ -29,7 +29,7 @@ Load the data and experimantal factors from vaccine dataset (GSE29619) and pure 
 The GSE29619 has been normalized and filtered for low expression.
 <<echo=TRUE>>=
 data("GSE29619")
-
+show(dim(GSE29619))
 data("GSE29619facts")
 data("IRIS")
 @
@@ -129,6 +129,7 @@ lmresRaw=fitLimmaSimple(GSE29619[, iiLAIV], designRaw,
                         contrasts)
 lmresCorr=fitLimmaSimple(GSE29619[, iiLAIV], designCorrected, 
                          contrasts)
+
 @
 We can see how the p-values have changed
 <<echo=TRUE,fig.width=10,fig.height=10>>=
