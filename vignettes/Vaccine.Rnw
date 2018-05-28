@@ -1,9 +1,25 @@
-\documentclass{article}
+\documentclass{article}[10pt]
+
+
 \usepackage[utf8]{inputenc}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+  concordance=TRUE
+)
+@
+
+
+<<setup, include=FALSE, cache=FALSE, tidy=TRUE>>=
+options(tidy=TRUE, width=50)
+@
+
 <<>>=
+require(limma)
+require(qvalue)
 library(CellCODE)
 library(RColorBrewer)
 @
@@ -13,6 +29,7 @@ Load the data and experimantal factors from vaccine dataset (GSE29619) and pure 
 The GSE29619 has been normalized and filtered for low expression.
 <<echo=TRUE>>=
 data("GSE29619")
+
 data("GSE29619facts")
 data("IRIS")
 @
@@ -20,7 +37,8 @@ Make a cell type tag matrix using the IRIS dataset. This is PBMC data so we are 
 <<echo=TRUE>>=
 irisTag=tagData(IRIS[,c("Neutrophil-Resting","CD4Tcell-N0", 
                         "Monocyte-Day0", "Bcell-naïve",
-                        "NKcell-control", "PlasmaCell-FromPBMC", "DendriticCell-LPSstimulated")],2, max=20, 
+                        "NKcell-control", "PlasmaCell-FromPBMC", 
+                        "DendriticCell-LPSstimulated")],2, max=20, 
                 ref=GSE29619, ref.mean=F);
 colnames(irisTag)=c("Neutrophil","Tcell", "Monocyte", 
                     "Bcell", "NKcell", "PlasmaCell", "DendriticCell" )
@@ -29,18 +47,20 @@ colnames(irisTag)=c("Neutrophil","Tcell", "Monocyte",
 
 Estimate proportions using the tag genes
 \setkeys{Gin}{width=1.0\textwidth}
-<<echo=TRUE,fig=TRUE,width=10,height=10>>=
-SPVs=getAllSPVs(GSE29619, paste(GSE29619.facts[,"vaccine"], GSE29619.facts[,"time"]), irisTag, "mixed", T) 
+<<echo=TRUE,fig.width=10,fig.height=10>>=
+SPVs=getAllSPVs(GSE29619, paste(GSE29619.facts$vaccine, GSE29619.facts$time),
+                irisTag, "mixed", T) 
 @
 
 
 Plot proportion variables against Flow Cytometry counter measurements
 
-<<echo=TRUE,fig=TRUE,width=5,height=5>>=
+<<echo=TRUE,fig.width=5,fig.height=5>>=
 #load the FCM data
 data("fcm")
 ii7v=which(GSE29619.facts[,3]=="D7")
-plot(fcm[ii7v,3], SPVs[ii7v,6], log="x", ylab="Plasma Cell SPV", xlab="Plasmablast fraction (in percent)", pch=19)
+plot(fcm[ii7v,3], SPVs[ii7v,6], log="x", ylab="Plasma Cell SPV",
+     xlab="Plasmablast fraction (in percent)", pch=19)
 
 @
 
@@ -48,16 +68,95 @@ plot(fcm[ii7v,3], SPVs[ii7v,6], log="x", ylab="Plasma Cell SPV", xlab="Plasmabla
 Get relative changes by normalizing for subject identity
 <<echo=TRUE>>=
 
-SPVsR=t(resid(t(SPVs), model.matrix(~0+as.factor(GSE29619.facts[,2]))))
+SPVsR=t(resid(t(SPVs), model.matrix(~0+as.factor(GSE29619.facts$subject))))
 @
-<<echo=TRUE,fig=TRUE,width=10,height=10>>=
+<<echo=TRUE,fig.width=10,fig.height=10>>=
 par(mfrow=c(2,3), mai=c(1,0.4,0.4,0.1), omi=rep(0,4))
 
 for ( i in c(2:7)){
-  boxplot(SPVsR[,i]~as.factor(paste(GSE29619.facts[,4],GSE29619.facts[,3])), outline=F, density=c(10,20,300),  las=2, yaxt="n", col=c(brewer.pal(3,"Blues"), brewer.pal(3, "Oranges")), density=c(10,20,300), at=c(1,2,3,5,6,7))
+  boxplot(SPVsR[,i]~
+            as.factor(paste(GSE29619.facts$vaccine,GSE29619.facts$time)),
+          outline=F, density=c(10,20,300), 
+          las=2, yaxt="n", col=c(brewer.pal(3,"Blues"),
+                                 brewer.pal(3, "Oranges")),
+          density=c(10,20,300), 
+          at=c(1,2,3,5,6,7))
   title(colnames(irisTag)[i])
 }
 
+@
+
+\section{Differential Expression}
+
+We can now inlcude our estimates into differential expression testing\\
+
+We will use limma and qvalue.
+<<echo=TRUE>>=
+library(limma)
+library(qvalue)
+@
+We will define a simple wrapper function
+<<echo=TRUE>>=
+fitLimmaSimple=function(data, mod, contrasts){
+  QV=function(pval){qvalue(pval)$qvalue}
+  
+  fit=lmFit(data, mod)
+  contrastMat=makeContrasts(contrasts=contrasts, levels=mod)
+  fitC=contrasts.fit(fit, contrasts=contrastMat)
+  fitC=eBayes(fitC, trend = T, robust=F)
+  fitC$q.value=apply(fitC$p.value,2,QV)
+  fitC$fit=fit
+  fitC
+}
+@
+Now, we can run the analysis on the live vaccine samples
+<<echo=FALSE>>=
+
+iiLAIV=which(GSE29619.facts$vaccine=="LAIV")
+grp=paste(GSE29619.facts$vaccine,
+          GSE29619.facts$time, sep="_")
+designRaw=model.matrix(~0+grp[iiLAIV]+
+                         GSE29619.facts$subject[iiLAIV])
+designCorrected=model.matrix(~0+grp[iiLAIV]+
+                               GSE29619.facts$subject[iiLAIV]+
+                               SPVs[iiLAIV,])
+colnames(designCorrected)[1:3]=colnames(designRaw)[1:3]=
+  sub("grp\\[iiLAIV\\]", "",colnames(designRaw)[1:3])
+colnames(designCorrected)=make.names(colnames(designCorrected))
+colnames(designRaw)=make.names(colnames(designRaw))
+contrasts=c("LAIV_D3-LAIV_D0", "LAIV_D7-LAIV_D0")
+lmresRaw=fitLimmaSimple(GSE29619[, iiLAIV], designRaw, 
+                        contrasts)
+lmresCorr=fitLimmaSimple(GSE29619[, iiLAIV], designCorrected, 
+                         contrasts)
+@
+We can see how the p-values have changed
+<<echo=TRUE,fig.width=10,fig.height=10>>=
+
+plot(lmresRaw$p.value[,1], lmresCorr$p.value[,2], 
+     log="xy", xlab="raw p-values", 
+     ylab="corrected p-values");abline(a=0,b=1)
+
+@
+
+Mostly the p-values got larger but some got smaller
+
+\section{Cell Type Assignment}
+
+
+Define the differentially expressed genes from the second (Day 7) contrast 
+
+<<echo=TRUE>>=
+iidiff=which(lmresCorr$q.value[,2]<0.05)
+@
+Use the F-test with default parameters
+<<echo=TRUE>>=
+cellPopResult=cellPopF(GSE29619[iidiff, iiLAIV], grp[iiLAIV], SPVs[iiLAIV,])
+@
+
+We can see the top genes that are predicted to be regulated in Tcells
+<<echo=TRUE>>=
+cbind(sort(cellPopResult[,"Tcell"],T)[1:10])
 @
 
 
